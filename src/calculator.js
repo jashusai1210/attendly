@@ -2,7 +2,7 @@
  * ATTENDLY — Attendance Calculator & Savage Tenglish Roasts
  *
  * Preserves original ATTENDLY calculator logic, including 100% target handling,
- * classes needed, bunkable classes, and all 64 original Tenglish roasts.
+ * classes needed, and all 89 Tenglish roasts.
  */
 
 export const TENGLISH_ROASTS = [
@@ -19,6 +19,9 @@ export const TENGLISH_ROASTS = [
   { min: 0, max: 39.99, text: "College gate security uncle ki nuvvu kuda new admission la anipisthav." },
   { min: 0, max: 39.99, text: "Nee attendance ki comeback ante first nuvvu college ki comeback ivvali ra." },
   { min: 0, max: 39.99, text: "Class ki raakapovadam lo PhD chesinattu undhi… certificate ekkada?" },
+  { min: 0, max: 39.99, text: "Nee attendance chusi Google Maps kuda 'last seen: intlo' ani pin pettindhi ra 📍😭" },
+  { min: 0, max: 39.99, text: "Nee bench ki fan club undhi… owner evaro matram evariki telidhu ra 💀" },
+  { min: 0, max: 39.99, text: "Archaeology department nee attendance record ni next semester excavate chesthundhi emo ra 🏺" },
 
   // 40 - 59.99%
   { min: 40, max: 59.99, text: "Nee attendance kanna Wi-Fi signal stable ga undhi ra 💀" },
@@ -33,6 +36,9 @@ export const TENGLISH_ROASTS = [
   { min: 40, max: 59.99, text: "Nee attendance chusi calendar kuda 'nenu em paapam chesa?' antundhi." },
   { min: 40, max: 59.99, text: "Class timetable lo nee peru special appearance ani pettali." },
   { min: 40, max: 59.99, text: "Bunking lo world record try chesthunnava? Practice aapu ra!" },
+  { min: 40, max: 59.99, text: "Nee attendance graph roller-coaster kaadhu ra… roller-coaster ki kuda minimum height untundhi 🎢" },
+  { min: 40, max: 59.99, text: "Nee college sightings meedha Discovery Channel documentary shoot cheyyali ra 📺" },
+  { min: 40, max: 59.99, text: "Attendance portal ninnu chusi 'bro, malli vachhava?' ani auto-logout ayindhi emo 💀" },
 
   // 60 - 69.99%
   { min: 60, max: 69.99, text: "Academic comeback antunnav… mundhu college ki comeback ivvu ra 😭" },
@@ -45,6 +51,9 @@ export const TENGLISH_ROASTS = [
   { min: 60, max: 69.99, text: "Oka side bunking, inko side tension… middle lo nee student life." },
   { min: 60, max: 69.99, text: "Attendance ni serious ga teesuko ra, adhi joke anukunte adhe joke chesthundhi." },
   { min: 60, max: 69.99, text: "Nee attendance ki motivation speech kaadhu, daily attendance kavali." },
+  { min: 60, max: 69.99, text: "Nee attendance Netflix series la undhi ra… season finale lo pass avuthava? 🍿" },
+  { min: 60, max: 69.99, text: "Target tho nee relationship lo ghosting rendu vaipula jaruguthundhi ra 👻" },
+  { min: 60, max: 69.99, text: "Attendance percent suspense chusi thriller directors notes teesukuntunnaru ra 🎬" },
 
   // 70 - 74.99%
   { min: 70, max: 74.99, text: "Target daggara parking chesav… lopaliki drive cheyyi ra!" },
@@ -54,6 +63,9 @@ export const TENGLISH_ROASTS = [
   { min: 70, max: 74.99, text: "Inka konni classes attend avvu ra… HOD tho eye contact easy avuthundhi." },
   { min: 70, max: 74.99, text: "Nee attendance cliffhanger episode la undhi. Next episode lo em avuthundho chudali." },
   { min: 70, max: 74.99, text: "Bunking ki break ivvu. Attendance ki oka chance ivvu." },
+  { min: 70, max: 74.99, text: "75% target ki pakkane unnav… kani nee bunking Google Maps lo scenic route teesukundhi 🗺️" },
+  { min: 70, max: 74.99, text: "Attendance border daggara tent vesav ra; konchem mundhuki nadichi cross cheyyi ⛺" },
+  { min: 70, max: 74.99, text: "Inko class miss aithe nee attendance ki cliffhanger kaadhu, cliff meedha camping ra 😭" },
 
   // 75 - 84.99%
   { min: 75, max: 84.99, text: "Not bad ra… kaani 85% gate daggara security check undhi." },
@@ -62,6 +74,9 @@ export const TENGLISH_ROASTS = [
   { min: 75, max: 84.99, text: "Bunking gang ninnu miss avuthundhi, kani future thanks chepthundhi." },
   { min: 75, max: 84.99, text: "Inka konchem effort pettu ra. HOD kuda shock avvali." },
   { min: 75, max: 84.99, text: "Student mode activate ayyindhi. Don't switch back to vacation mode." },
+  { min: 75, max: 84.99, text: "85% gate daggara nee attendance ki bouncer: 'list lo peru undha?' antunnadu ra 🚪" },
+  { min: 75, max: 84.99, text: "Inko konni classes attend avvu… attendance chart ki glow-up almost complete ra ✨" },
+  { min: 75, max: 84.99, text: "Nee attendance comeback chusi interval lo whistle veyyali ra 🎉" },
 
   // 85 - 89.99%
   { min: 85, max: 89.99, text: "85% reach ayyav! Ippudu overconfidence tho attendance ni crash cheyyaku." },
@@ -70,6 +85,9 @@ export const TENGLISH_ROASTS = [
   { min: 85, max: 89.99, text: "Responsible student vibes… maintain cheyyi ra, temporary kaakudadhu." },
   { min: 85, max: 89.99, text: "Bunking gang nunchi resignation letter submit chesava enti?" },
   { min: 85, max: 89.99, text: "Attendance bagundhi. Ippudu academics kuda alane chusko." },
+  { min: 85, max: 89.99, text: "Classroom chair nee face recognize chesi welcome back ani unlock ayyindhi ra 😂" },
+  { min: 85, max: 89.99, text: "Attendance lo comeback ichhav… bunking gang nee status ki sad song pettindhi 🎶" },
+  { min: 85, max: 89.99, text: "HOD nee attendance chusi register ki protective case konnademo ra 🛡️" },
 
   // 90 - 99.99%
   { min: 90, max: 99.99, text: "Rey, nee attendance chusi biometric machine emotional ayyindhi." },
@@ -78,6 +96,9 @@ export const TENGLISH_ROASTS = [
   { min: 90, max: 99.99, text: "Attendance king! Kaani konchem life kuda enjoy cheyyi ra." },
   { min: 90, max: 99.99, text: "Nee attendance chusi proxy gang group nunchi remove chesaru emo." },
   { min: 90, max: 99.99, text: "Discipline level high. Friends ninnu undercover faculty anukuntunnaru." },
+  { min: 90, max: 99.99, text: "Biometric machine nee kosam fan account open chesindhi ra 🤖💖" },
+  { min: 90, max: 99.99, text: "Nee attendance chusi calendar kuda 'ee roju kuda vachhava, legend!' antundhi 📅" },
+  { min: 90, max: 99.99, text: "Class lo nee seat ki nee peru kaakunda 'reserved for regular' ani board pettali ra 👑" },
 
   // 100%
   { min: 100, max: 100, text: "Nuvvu emanna watchman duty chesthunnava college lo? 😭💀" },
@@ -85,7 +106,10 @@ export const TENGLISH_ROASTS = [
   { min: 100, max: 100, text: "Principal ki nee attendance chusi attendance ivvali anipisthundhi." },
   { min: 100, max: 100, text: "Nuvvu student aa leka college permanent staff aa ra? 😂" },
   { min: 100, max: 100, text: "College closing time lo lights off chesi nuvve lock vesthunnava?" },
-  { min: 100, max: 100, text: "Attendance 100%… nee intlo vallaki nee darshanam appointment tho na?" }
+  { min: 100, max: 100, text: "Attendance 100%… nee intlo vallaki nee darshanam appointment tho na?" },
+  { min: 100, max: 100, text: "100% attendance aa? College building ki nee Aadhaar address update cheyyali ra 🏫" },
+  { min: 100, max: 100, text: "Nuvvu absent aithe campus lo missing-person alert kaadhu, national emergency vestharu ra 🚨" },
+  { min: 100, max: 100, text: "Biometric machine nee fingerprint chusi 'finally, my favourite celebrity!' antundhi ra 🌟" }
 ];
 
 /**

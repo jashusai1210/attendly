@@ -57,8 +57,8 @@ describe("Calculator — Karma Math & Savage Tenglish Roasts", () => {
     assert.throws(() => calculateAttendanceKarma({ total: 50.5, attended: 20, targetPercent: 85 }), /whole numbers/i);
   });
 
-  it("contains all original Tenglish roasts from attendance_calculator.html (65 entries)", () => {
-    assert.equal(TENGLISH_ROASTS.length, 65);
+  it("contains the expanded set of Tenglish roasts (89 entries)", () => {
+    assert.equal(TENGLISH_ROASTS.length, 89);
   });
 
   it("has roasts covering all percentage ranges including 100%", () => {
@@ -82,7 +82,7 @@ describe("Calculator — Karma Math & Savage Tenglish Roasts", () => {
   it("chooseRoast returns a valid roast from the matching bracket", () => {
     const roastLow = chooseRoast(25);
     assert.ok(typeof roastLow.text === "string" && roastLow.text.length > 5);
-    assert.ok(roastLow.index >= 0 && roastLow.index < 64);
+    assert.ok(roastLow.index >= 0 && roastLow.index < TENGLISH_ROASTS.length);
 
     const roast100 = chooseRoast(100);
     assert.ok(

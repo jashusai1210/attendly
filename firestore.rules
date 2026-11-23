@@ -1,0 +1,273 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+    function activeUser(uid) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(uid))
+        && get(/databases/$(database)/documents/users/$(uid)).data.disabled != true;
+    }
+    function acceptedFriend(uid) {
+      return signedIn() && (
+        (
+          exists(/databases/$(database)/documents/friendships/$(request.auth.uid + '_' + uid))
+          && get(/databases/$(database)/documents/friendships/$(request.auth.uid + '_' + uid)).data.status == 'accepted'
+        ) ||
+        (
+          exists(/databases/$(database)/documents/friendships/$(uid + '_' + request.auth.uid))
+          && get(/databases/$(database)/documents/friendships/$(uid + '_' + request.auth.uid)).data.status == 'accepted'
+        )
+      );
+    }
+
+    match /users/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.disabled == false
+        && request.resource.data.timetable is list
+        && request.resource.data.timetable.size() <= 100
+        && request.resource.data.calendarEvents is list
+        && request.resource.data.calendarEvents.size() <= 100
+        && request.resource.data.keys().hasOnly(['uid','displayName','username','email','photoURL','createdAt','disabled','timetable','calendarEvents']);
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow update: if signedIn() && (
+        (request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName','username','photoURL','timetable','calendarEvents'])
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['displayName'])
+            || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 50))
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['username'])
+            || (request.resource.data.username is string && request.resource.data.username.matches('^[a-z0-9_]{3,24}$')))
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['photoURL'])
+            || request.resource.data.photoURL is string)
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['timetable'])
+            || (request.resource.data.timetable is list && request.resource.data.timetable.size() <= 100))
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['calendarEvents'])
+            || (request.resource.data.calendarEvents is list && request.resource.data.calendarEvents.size() <= 100)))
+        || isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /userDirectory/{uid} {
+      allow get, list: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','displayName','username','photoURL'])
+        && request.resource.data.displayName is string
+        && request.resource.data.username is string
+        && request.resource.data.username.matches('^[a-z0-9_]{3,24}$');
+      allow delete: if isAdmin();
+    }
+
+    match /academicSettings/{settingsId} {
+      allow get, list: if signedIn();
+      allow create, update: if isAdmin()
+        && settingsId == 'main'
+        && request.resource.data.semesterStartDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.notificationSettings is map
+        && request.resource.data.notificationSettings.dailyEnabled is bool
+        && request.resource.data.notificationSettings.dailyTitle is string
+        && request.resource.data.notificationSettings.dailyTitle.size() <= 100
+        && request.resource.data.notificationSettings.dailyBody is string
+        && request.resource.data.notificationSettings.dailyBody.size() <= 220
+        && request.resource.data.notificationSettings.dailyTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$')
+        && request.resource.data.notificationSettings.thursdayEnabled is bool
+        && request.resource.data.notificationSettings.thursdayTitle is string
+        && request.resource.data.notificationSettings.thursdayTitle.size() <= 100
+        && request.resource.data.notificationSettings.thursdayBody is string
+        && request.resource.data.notificationSettings.thursdayBody.size() <= 220
+        && request.resource.data.notificationSettings.thursdayTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$')
+        && request.resource.data.notificationSettings.sundayEnabled is bool
+        && request.resource.data.notificationSettings.sundayTitle is string
+        && request.resource.data.notificationSettings.sundayTitle.size() <= 100
+        && request.resource.data.notificationSettings.sundayBody is string
+        && request.resource.data.notificationSettings.sundayBody.size() <= 220
+        && request.resource.data.notificationSettings.sundayTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$')
+        && request.resource.data.notificationSettings.loginEnabled is bool
+        && request.resource.data.notificationSettings.loginTitle is string
+        && request.resource.data.notificationSettings.loginTitle.size() <= 100
+        && request.resource.data.notificationSettings.loginBody is string
+        && request.resource.data.notificationSettings.loginBody.size() <= 220
+        && request.resource.data.notificationSettings.keys().hasOnly([
+          'dailyEnabled','dailyTitle','dailyBody','dailyTime',
+          'thursdayEnabled','thursdayTitle','thursdayBody','thursdayTime',
+          'sundayEnabled','sundayTitle','sundayBody','sundayTime',
+          'loginEnabled','loginTitle','loginBody'
+        ])
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.keys().hasOnly(['semesterStartDate','notificationSettings','updatedBy','updatedAt']);
+      allow delete: if false;
+    }
+
+    match /courses/{courseId} {
+      allow get, list: if signedIn();
+      allow create: if isAdmin()
+        && request.resource.data.status == 'scheduled'
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.startDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.endDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.durationDays is int
+        && request.resource.data.durationDays >= 1
+        && request.resource.data.durationDays <= 365
+        && request.resource.data.attendanceTarget == 80
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.keys().hasOnly(['name','startDate','endDate','durationDays','attendanceTarget','status','createdBy','createdAt','updatedAt']);
+      allow update: if isAdmin()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.startDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.endDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.durationDays is int
+        && request.resource.data.durationDays >= 1
+        && request.resource.data.durationDays <= 365
+        && request.resource.data.attendanceTarget == 80
+        && request.resource.data.status in ['scheduled','active','completed']
+        && request.resource.data.keys().hasOnly(['name','startDate','endDate','durationDays','attendanceTarget','status','createdBy','createdAt','updatedAt'])
+        && (
+          request.resource.data.status != 'active'
+          || (
+            existsAfter(/databases/$(database)/documents/courseControl/active)
+            && getAfter(/databases/$(database)/documents/courseControl/active).data.status == 'active'
+            && getAfter(/databases/$(database)/documents/courseControl/active).data.courseId == courseId
+          )
+        )
+        && (
+          resource.data.status != 'active'
+          || request.resource.data.status == 'active'
+          || !existsAfter(/databases/$(database)/documents/courseControl/active)
+          || getAfter(/databases/$(database)/documents/courseControl/active).data.courseId != courseId
+        );
+      allow delete: if isAdmin()
+        && resource.data.status == 'scheduled'
+        && (
+          !exists(/databases/$(database)/documents/courseControl/active)
+          || get(/databases/$(database)/documents/courseControl/active).data.courseId != courseId
+        );
+    }
+
+    match /courseControl/{controlId} {
+      allow get, list: if signedIn();
+      allow create, update: if isAdmin()
+        && controlId == 'active'
+        && request.resource.data.status in ['active','inactive']
+        && request.resource.data.keys().hasOnly(['courseId','name','startDate','endDate','durationDays','status','updatedAt'])
+        && (
+          (request.resource.data.status == 'inactive' && request.resource.data.courseId == null)
+          || (
+            request.resource.data.status == 'active'
+            && request.resource.data.courseId is string
+            && existsAfter(/databases/$(database)/documents/courses/$(request.resource.data.courseId))
+            && getAfter(/databases/$(database)/documents/courses/$(request.resource.data.courseId)).data.status == 'active'
+            && getAfter(/databases/$(database)/documents/courses/$(request.resource.data.courseId)).data.name == request.resource.data.name
+            && getAfter(/databases/$(database)/documents/courses/$(request.resource.data.courseId)).data.startDate == request.resource.data.startDate
+            && getAfter(/databases/$(database)/documents/courses/$(request.resource.data.courseId)).data.endDate == request.resource.data.endDate
+          )
+        );
+      allow delete: if false;
+    }
+
+    match /attendance/{uid} {
+      allow get: if signedIn() && activeUser(request.auth.uid) &&
+        (request.auth.uid == uid || acceptedFriend(uid) || isAdmin());
+      allow list: if isAdmin();
+      allow create, update: if activeUser(uid) && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','totalClasses','attendedClasses','targetPercentage','lastDate','lastStatus','lastLocationStatus','courseStats','updatedAt'])
+        && request.resource.data.totalClasses is int
+        && request.resource.data.totalClasses >= 0
+        && request.resource.data.totalClasses <= 10000
+        && request.resource.data.attendedClasses is int
+        && request.resource.data.attendedClasses >= 0
+        && request.resource.data.attendedClasses <= request.resource.data.totalClasses
+        && request.resource.data.targetPercentage in [70,75,80,85,90,95,100]
+        && request.resource.data.courseStats is map;
+      allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
+
+      match /daily/{date} {
+        allow get, list: if signedIn() && activeUser(request.auth.uid) &&
+          (request.auth.uid == uid || acceptedFriend(uid) || isAdmin());
+        allow create, update: if activeUser(uid) && request.auth.uid == uid
+          && date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && request.resource.data.date == date
+          && request.resource.data.status in ['attended', 'absent']
+          && request.resource.data.locationStatus in ['inside', 'outside', 'unknown']
+          && request.resource.data.courseId is string
+          && request.resource.data.courseName is string
+          && exists(/databases/$(database)/documents/courseControl/active)
+          && get(/databases/$(database)/documents/courseControl/active).data.status == 'active'
+          && get(/databases/$(database)/documents/courseControl/active).data.courseId == request.resource.data.courseId
+          && get(/databases/$(database)/documents/courseControl/active).data.name == request.resource.data.courseName
+          && date >= get(/databases/$(database)/documents/courseControl/active).data.startDate
+          && date <= get(/databases/$(database)/documents/courseControl/active).data.endDate
+          && request.resource.data.keys().hasOnly(['date', 'courseId', 'courseName', 'status', 'locationStatus', 'source', 'createdAt', 'updatedAt']);
+        allow delete: if signedIn() && (request.auth.uid == uid || isAdmin());
+      }
+    }
+
+    match /holidays/{date} {
+      allow get, list: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /announcements/{announcementId} {
+      allow get, list: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /fcmTokens/{tokenId} {
+      allow create, update: if signedIn() && activeUser(request.auth.uid)
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow get, list: if isAdmin();
+    }
+
+    match /friendRequests/{requestId} {
+      allow create: if activeUser(request.auth.uid)
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.toUid is string
+        && request.resource.data.toUid != request.auth.uid
+        && request.resource.data.fromName is string
+        && request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly(['fromUid','fromName','toUid','status','createdAt']);
+      allow get, list: if signedIn() && activeUser(request.auth.uid) &&
+        (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid || isAdmin());
+      allow update: if signedIn() && activeUser(request.auth.uid)
+        && resource.data.toUid == request.auth.uid
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['accepted','rejected'];
+      allow delete: if isAdmin();
+    }
+
+    match /friendships/{friendshipId} {
+      allow get, list: if signedIn() && activeUser(request.auth.uid) &&
+        (request.auth.uid in resource.data.members || isAdmin());
+      allow create: if signedIn() && activeUser(request.auth.uid)
+        && request.resource.data.status == 'accepted'
+        && request.resource.data.members is list
+        && request.resource.data.members.size() == 2
+        && request.auth.uid in request.resource.data.members
+        && request.resource.data.requestId is string
+        && exists(/databases/$(database)/documents/friendRequests/$(request.resource.data.requestId))
+        && get(/databases/$(database)/documents/friendRequests/$(request.resource.data.requestId)).data.toUid == request.auth.uid
+        && get(/databases/$(database)/documents/friendRequests/$(request.resource.data.requestId)).data.fromUid in request.resource.data.members;
+      allow update: if signedIn() && activeUser(request.auth.uid) &&
+        request.auth.uid in resource.data.members
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'blocked';
+      allow delete: if signedIn() && (request.auth.uid in resource.data.members || isAdmin());
+    }
+
+    match /auditLogs/{logId} {
+      allow create: if signedIn() && activeUser(request.auth.uid)
+        && request.resource.data.actorUid == request.auth.uid;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

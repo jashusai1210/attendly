@@ -1,0 +1,13 @@
+name = "attendly-scheduler"
+main = "index.js"
+compatibility_date = "2024-11-01"
+
+# Check admin-configured IST notification times once per minute.
+# The worker only sends when the matching day and minute are due.
+[triggers]
+crons = ["* * * * *"]
+
+# Set secrets via `wrangler secret put <KEY>`:
+# - FIREBASE_PROJECT_ID
+# - FIREBASE_CLIENT_EMAIL
+# - FIREBASE_PRIVATE_KEY

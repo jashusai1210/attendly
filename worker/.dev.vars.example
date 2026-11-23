@@ -1,0 +1,9 @@
+# Cloudflare Worker Environment Variables Example (Local Development)
+# DO NOT COMMIT REAL SECRETS. Set production secrets using:
+#   npx wrangler secret put FIREBASE_PROJECT_ID
+#   npx wrangler secret put FIREBASE_CLIENT_EMAIL
+#   npx wrangler secret put FIREBASE_PRIVATE_KEY
+
+FIREBASE_PROJECT_ID="attendence77"
+FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@attendence77.iam.gserviceaccount.com"
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC...\n-----END PRIVATE KEY-----\n"

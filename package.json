@@ -1,0 +1,20 @@
+{
+  "name": "attendly",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/**/*.test.js",
+    "admin:claim": "node scripts/set-admin.mjs"
+  },
+  "dependencies": {
+    "firebase": "^12.6.0"
+  },
+  "devDependencies": {
+    "vite": "^7.2.2",
+    "firebase-admin": "^13.5.0"
+  }
+}

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production & Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Firebase & Cloudflare
+.firebase/
+.wrangler/
+.dev.vars
+
+# Sensitive credentials & keys
+service-account*.json
+*.pem
+*.key
+.env
+.env.local
+.env.*.local
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archive outputs
+*.zip
